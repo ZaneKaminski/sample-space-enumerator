@@ -1,0 +1,383 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Sample Space Enumerator</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="#">Sample Space Enumerator</a>
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li class="active"><a href="#">Use it!</a></li>
+                        <li><a href="#about">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <ul class="nav nav-tabs" id="myTab">
+            <li><a href="#elements">Element Sets</a></li>
+            <li><a href="#samplespace">Sample Space</a></li>
+            <li><a href="#calculations">Calculations</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade" id="elements">
+                <table class="table table-bordered table-striped table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <td style="width: 50%;"><strong>Name</strong></td>
+                            <td style="width: 50%;"><strong>Values</strong></td>
+                        </tr>
+                    </thead>
+                    <tbody id="elementsList">
+                        <tr id="noSets">
+                            <td colspan="2" style="text-align: center;">No element sets have been added.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button id="addElement" class="btn btn-small"><i class="icon-plus"></i>&nbsp;New Element Set</button>
+            </div>
+            <div class="tab-pane fade" id="samplespace">
+                <div class="row">
+                    <div class="span3">
+                        <ul id="sampleSpaceList" class="nav nav-list">
+                            <li class="nav-header">Sample Spaces</li>
+                            <li id="noSampleSpaces" style="text-align: center;">No sample spaces have been added.</li>
+                        </ul>
+                        <div class="btn-group">
+                            <button class="btn btn-small dropdown-toggle" data-toggle="dropdown" style="margin-top: 5px; width: 100%;"><i class="icon-plus"></i>&nbsp;New Sample Space&nbsp;<span class="caret"></span></button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                <li><a id="productOfElementSets" tabindex="-1" href="#">Product of Element Sets</a></li>
+                                <li><a id="selectSampleSpace" tabindex="-1" href="#">Selection From Sample Space</a></li>
+                            </ul>
+                        </div>
+                        <div style="height: 150px;"></div>
+                    </div>
+                    <div id="sampleSpaceDisplayArea" class="span9">
+                        <div id="selectASampleSpaceLabel" class="alert alert-info">
+                            Select a sample space.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="calculations">..sdfg.</div>
+        </div>
+    </div>
+    <div id="editElementSetDialog" class="modal hide fade">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4>Element Set</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div id="elementSetSaveError" class="alert alert-error hide">
+                    <button type="button" class="close" data-dismiss="alert">�</button>
+                    <strong>Error!</strong> Check your JSON syntax!
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="elementSetName">Set Name</label>
+                    <div class="controls">
+                        <input id="elementSetName" type="text" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="elementSetContents">JSON-formatted Element Array</label>
+                    <div class="controls">
+                        <textarea id="elementSetContents" style="resize: none; overflow-y: hidden;"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <a href="#" id="elementSetDelete" data-dismiss="modal" class="btn btn-danger">Delete</a>
+            <a href="#" id="elementSetSaveChanges" class="btn btn-primary">Save changes</a>
+        </div>
+    </div>
+    <div id="productOfElementSetsDialog" class="modal hide fade">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4>New Sample Space: Product of Element Sets</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div id="elementSetSampleSpaceSaveError" class="alert alert-error hide">
+                    <button type="button" class="close" data-dismiss="alert">�</button>
+                    <strong>Error!</strong> This name is already in use!
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="elementSetSampleSpaceName">Sample Space Name</label>
+                    <div class="controls">
+                        <input id="elementSetSampleSpaceName" type="text" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="selectElementSet1">Element Sets to Permute</label>
+                    <div class="controls">
+                        <select class="selectElementSet" id="selectElementSet1" style="margin-bottom: 5px;"></select>
+                        <select class="selectElementSet" id="selectElementSet2"></select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <a href="#" id="elementSetSampleSpaceSaveButton" class="btn btn-primary">Save changes</a>
+        </div>
+    </div>
+    <div id="selectSampleSpaceDialog" class="modal hide fade">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4>New Sample Space: Product of Element Sets</h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div id="selectSampleSpaceSaveError" class="alert alert-error hide">
+                    <button type="button" class="close" data-dismiss="alert">�</button>
+                    <strong>Error!</strong> This name is already in use!
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="selectSampleSpaceName">Sample Space Name</label>
+                    <div class="controls">
+                        <input id="selectSampleSpaceName" type="text" />
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="selectSampleSpaceSelector">Select From</label>
+                    <div class="controls">
+                        <select id="selectSampleSpaceSelector"></select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="selectionCriteria">Selection Criteria</label>
+                    <div class="controls">
+                        <select id="selectionCriteria">
+                            <option>Greatest</option>
+                            <option>Least</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="inputIcon">Number to Select</label>
+                    <div class="controls">
+                        <div class="input-append input-prepend">
+                            <button class="btn spinnerDown" type="button"><i class="icon-arrow-down"></i></button>
+                            <input class="span1" id="selectQuantity" type="text" disabled value="0">
+                            <button class="btn spinnerUp" type="button"><i class="icon-arrow-up"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <a href="#" id="selectSampleSpaceSaveButton" class="btn btn-primary">Save changes</a>
+        </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            window.ssa = {
+                elementSets: {
+                    count: function () {
+                        var count = 0;
+                        for (var i in window.ssa.elementSets.sets) {
+                            if (window.ssa.elementSets.sets[i] != undefined) {
+                                count++;
+                            }
+                        }
+                        return count;
+                    },
+                    sets: {}
+                },
+                sampleSpaces: {
+                    count: function () {
+                        var count = 0;
+                        for (var i in window.ssa.sampleSpaces.sets) {
+                            if (window.ssa.sampleSpaces.sets[i] != undefined) {
+                                count++;
+                            }
+                        }
+                        return count;
+                    },
+                    sets: {}
+                }
+            };
+            $(document).on('click', '.spinnerDown', function () {
+                $(this).next().val(parseInt($(this).next().val()) - 1);
+            });
+            $(document).on('click', '.spinnerUp', function () {
+                $(this).prev().val(parseInt($(this).prev().val()) + 1);
+            });
+            $(document).on('click', '#elementsList tr', function (e) {
+                $('#elementSetSaveError').hide();
+                $('#elementSetDelete').show();
+                $('#elementSetName').val($(this).children().first().text())
+                $('#elementSetContents').val(JSON.stringify(window.ssa.elementSets.sets[$('#elementSetName').val()].set));
+                $('#editElementSetDialog').modal();
+            });
+            $('#myTab a').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+            $('#addElement').click(function (e) {
+                $('#elementSetSaveError').hide();
+                $('#elementSetDelete').hide();
+                $('#elementSetName').val('')
+                $('#elementSetContents').val('');
+                $('#editElementSetDialog').modal();
+            });
+            $('#elementSetSaveChanges').click(function (e) {
+                // Parse the JSON
+                var set = null;
+                try {
+                    // Try to parse here
+                    set = JSON.parse($('#elementSetContents').val());
+                } catch (ex) { }
+
+                if (set == null) { // We had an error parsing
+                    $('#elementSetSaveError').show();
+                } else { // Parsed it okay
+                    if (window.ssa.elementSets.sets[$('#elementSetName').val()] == undefined) { //This must be a new entry.
+                        // So create this new element set.
+                        window.ssa.elementSets.sets[$('#elementSetName').val()] = {
+                            name: $('#elementSetName').val(),
+                            set: set,
+                            element: $('<tr><td>' + $('#elementSetName').val() + '</td><td>' + set.toString() + '</td>')
+                        }
+
+                        $('#elementsList').append(window.ssa.elementSets.sets[$('#elementSetName').val()].element);
+
+                        if (window.ssa.elementSets.count() > 0) {
+                            $('#noSets').hide();
+                        } else {
+                            $('#noSets').show();
+                        }
+                    } else { // We're editing an old entry.
+                        //Change the properties of it.
+                        window.ssa.elementSets.sets[$('#elementSetName').val()].set = set;
+                    }
+
+                    // Now update the table row.
+                    window.ssa.elementSets.sets[$('#elementSetName').val()].element
+                        .children().last().text(
+                            window.ssa.elementSets.sets[$('#elementSetName').val()].set.toString());
+
+                    // Close the window.
+                    $('#editElementSetDialog').modal('hide');
+                }
+            });
+            $('#elementSetDelete').click(function (e) {
+                window.ssa.elementSets.sets[$('#elementSetName').val()].element.remove();
+                window.ssa.elementSets.sets[$('#elementSetName').val()] = undefined;
+
+                if (window.ssa.elementSets.count() > 0) {
+                    $('#noSets').hide();
+                } else {
+                    $('#noSets').show();
+                }
+            });
+            $('#productOfElementSets').click(function (e) {
+                $('#elementSetSampleSpaceSaveError').hide();
+                $('.selectElementSet').children().remove();
+                for (var i in window.ssa.elementSets.sets) {
+                    if (window.ssa.elementSets.sets[i] != undefined) {
+                        $('.selectElementSet').append('<option>' + i + '</option');
+                    }
+                }
+                $('#productOfElementSetsDialog').modal();
+            });
+            $('#elementSetSampleSpaceSaveButton').click(function (e) {
+                if (window.ssa.sampleSpaces.sets[$('#elementSetSampleSpaceName').val()] != undefined) {
+                    $('#elementSetSampleSpaceSaveError').show();
+                } else {
+                    var space = [];
+                    for (var i in window.ssa.elementSets.sets[$('#selectElementSet1').val()].set) {
+                        var row = [];
+                        for (var j in window.ssa.elementSets.sets[$('#selectElementSet2').val()].set) {
+                            row.push([
+                                window.ssa.elementSets.sets[$('#selectElementSet1').val()].set[i],
+                                window.ssa.elementSets.sets[$('#selectElementSet2').val()].set[j]]);
+                        }
+                        space.push(row);
+                    }
+                    window.ssa.sampleSpaces.sets[$('#elementSetSampleSpaceName').val()] = space;
+                    $('#sampleSpaceList').append($('<li><a href="#">' + $('#elementSetSampleSpaceName').val() + '</a></li>'));
+                    if (window.ssa.sampleSpaces.count() > 0) {
+                        $('#noSampleSpaces').hide();
+                    } else {
+                        $('#noSampleSpaces').show();
+                    }
+                    $('#productOfElementSetsDialog').modal('hide');
+                }
+            });
+            $('#selectSampleSpace').click(function (e) {
+                $('#selectSaveError').hide();
+                $('#selectSampleSpace').children().remove();
+                $('#selectSampleSpaceName').val('');
+                for (var i in window.ssa.sampleSpaces.sets) {
+                    if (window.ssa.sampleSpaces.sets[i] != undefined) {
+                        $('#selectSampleSpaceSelector').append('<option>' + i + '</option');
+                    }
+                }
+                $('#selectSampleSpaceDialog').modal();
+            });
+            $('#selectSampleSpaceSaveButton').click(function (e) {
+                if (window.ssa.sampleSpaces.sets[$('#selectSampleSpaceName').val()] != undefined) {
+                    $('#elementSetSampleSpaceSaveError').show();
+                } else {
+                    var space = [];
+                    
+                    for (var i in window.ssa.sampleSpaces.sets[$('#selectSampleSpaceSelector').val()]) {
+                        var row = [];
+                        for (var j in window.ssa.sampleSpaces.sets[$('#selectSampleSpaceSelector').val()][i]) {
+                            var sorted = window.ssa.sampleSpaces.sets[$('#selectSampleSpaceSelector').val()][i][j].sort();
+                            if ($('#selectionCriteria').val() == 'Greatest') {
+                                sorted = sorted.reverse();
+                            }
+                            var buffer = [];
+                            var k;
+                            for (k = 0; k < parseInt($('#selectQuantity').val()) ; k++) {
+                                buffer[k] = sorted[k];
+                            }
+                            row.push(buffer);
+                        }
+                        space.push(row);
+                    }
+                    
+                    window.ssa.sampleSpaces.sets[$('#selectSampleSpaceName').val()] = space;
+                    $('#sampleSpaceList').append($('<li><a href="#">' + $('#selectSampleSpaceName').val() + '</a></li>'));
+                    if (window.ssa.sampleSpaces.count() > 0) {
+                        $('#noSampleSpaces').hide();
+                    } else {
+                        $('#noSampleSpaces').show();
+                    }
+                    $('#selectSampleSpaceDialog').modal('hide');
+                }
+            });
+            $(document).on('click', '#sampleSpaceList li a', function (e) {
+                $('#sampleSpaceList li.active').removeClass('active');
+                $(this).parent().addClass('active');
+                $('#selectASampleSpaceLabel').hide();
+                var table = $('<table class="table table-bordered table-striped table-condensed"></table>');
+                for (var i in window.ssa.sampleSpaces.sets[$(this).text()]) {
+                    var row = $('<tr></tr>');
+                    for (var j in window.ssa.sampleSpaces.sets[$(this).text()][i]) {
+                        row.append($('<td>[' + window.ssa.sampleSpaces.sets[$(this).text()][i][j].toString() + ']</td>'));
+                    }
+                    table.append(row);
+                }
+                $('#sampleSpaceDisplayArea table').remove();
+                $('#sampleSpaceDisplayArea').append(table);
+            });
+        });
+    </script>
+</body>
+</html>
